@@ -1,0 +1,431 @@
+/* 静态预览专用：工具条与提示。应用本身样式全部来自 style.css（真实构建产物） */
+
+.pv-variant[hidden] {
+  display: none !important;
+}
+
+.pv-fab {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 22px 50px -28px rgba(15, 23, 42, 0.8);
+  color: #0d1017;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pv-fab:hover {
+  background: #fff;
+}
+
+.pv-fab-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+}
+
+.pv-panel {
+  position: fixed;
+  right: 16px;
+  bottom: 70px;
+  z-index: 9999;
+  width: min(92vw, 330px);
+  padding: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 28px 60px -30px rgba(15, 23, 42, 0.85);
+}
+
+.pv-panel[hidden] {
+  display: none !important;
+}
+
+.pv-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #0d1017;
+}
+
+.pv-label {
+  margin: 12px 0 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
+.pv-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pv-pill {
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 9999px;
+  padding: 5px 11px;
+  background: rgba(15, 23, 42, 0.03);
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pv-pill:hover {
+  color: #0d1017;
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.pv-pill[aria-pressed="true"] {
+  background: #0d1017;
+  border-color: transparent;
+  color: #fff;
+}
+
+.pv-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.pv-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.04);
+  color: #0d1017;
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.pv-link:hover {
+  background: rgba(15, 23, 42, 0.08);
+}
+
+.pv-hint {
+  margin-top: 12px;
+  font-size: 10px;
+  line-height: 1.6;
+  color: #9ca3af;
+}
+
+.pv-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 10000;
+  transform: translateX(-50%) translateY(12px);
+  padding: 9px 16px;
+  border-radius: 9999px;
+  background: #0d1017;
+  color: #fff;
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.pv-toast[data-show="true"] {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media print {
+  .pv-fab,
+  .pv-panel,
+  .pv-toast,
+  .pv-modal-overlay {
+    display: none !important;
+  }
+}
+
+/* --- 线索页：原生下拉（替代离线空掉的 Radix 下拉） --- */
+.pv-select {
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 16px;
+  background: #fff;
+  color: #0f172a;
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+}
+
+.pv-select-filter {
+  height: 44px;
+  min-width: 128px;
+  padding: 0 12px;
+  font-size: 14px;
+}
+
+.pv-select-filter-intent {
+  height: 36px;
+  min-width: 128px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+/* 归属列：离线快照不能改派，只显示文字 */
+.pv-owner {
+  display: inline-block;
+  font-size: 11px;
+  color: #64748b;
+  cursor: help;
+}
+
+.pv-select:focus {
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.04);
+}
+
+/* --- 展示页编辑：选中的主题卡 --- */
+.pv-variant[data-pv-page="editor"] [data-theme-option].pv-theme-active {
+  border-color: var(--ink, #0f172a) !important;
+  box-shadow: 0 20px 40px -24px rgba(15, 23, 42, 0.8) !important;
+  outline: 2px solid rgba(0, 0, 0, 0.06);
+  outline-offset: 0;
+}
+
+/* --- 展示页编辑：开关拨动状态 --- */
+.pv-variant[data-pv-page="editor"] button[role="switch"][data-state="checked"] {
+  background-color: var(--ink, #0f172a);
+}
+
+.pv-variant[data-pv-page="editor"] button[role="switch"][data-state="unchecked"] {
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
+/* ---------- 大屏适配：工作台别被拉成一整条 ---------- */
+.pv-page[data-pv-page="workbench"] main,
+.pv-page[data-pv-page="workbench"] header > div {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+}
+
+/* ---------- 产品详情弹窗（离线预览用原生实现） ---------- */
+.pv-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+.pv-modal {
+  position: relative;
+  width: min(92vw, 520px);
+  max-height: 84vh;
+  overflow-y: auto;
+  padding: 22px;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 30px 70px -30px rgba(15, 23, 42, 0.7);
+  font-size: 13px;
+}
+
+.pv-modal-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 16px;
+  margin-bottom: 14px;
+}
+
+.pv-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.06);
+  color: #0d1017;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.pv-modal-title {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0d1017;
+}
+
+.pv-modal-sub {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.pv-modal-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.75;
+  white-space: pre-line;
+  color: #475569;
+}
+
+.pv-modal-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.pv-modal-tags span {
+  border-radius: 9999px;
+  padding: 3px 9px;
+  background: rgba(15, 23, 42, 0.05);
+  color: #64748b;
+  font-size: 11px;
+}
+
+.pv-modal-action {
+  display: none;
+}
+
+/* ---------- 离线快照说明弹窗 ---------- */
+.pv-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.pv-modal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 9999px;
+  background: #0d1017;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.pv-modal-btn:hover {
+  background: #1f2937;
+}
+
+.pv-modal-btn-ghost {
+  background: rgba(15, 23, 42, 0.06);
+  color: #0d1017;
+}
+
+.pv-modal-btn-ghost:hover {
+  background: rgba(15, 23, 42, 0.12);
+}
+
+.pv-modal-tip {
+  margin: 16px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  font-size: 11px;
+  line-height: 1.75;
+  color: #94a3b8;
+}
+
+/* --- 注册 / 登录页提交后的演示结果 --- */
+.pv-auth-done {
+  margin-top: 4px;
+  padding: 22px 20px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.04);
+  text-align: left;
+}
+
+.pv-auth-done-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  background: #10b981;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.pv-auth-done-title {
+  margin: 14px 0 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.pv-auth-done-desc {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.75;
+  color: #64748b;
+}
+
+.pv-auth-done-who {
+  margin: 10px 0 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #0f172a;
+}
+
+/* --- 预览面板里的「当前显示身份」 --- */
+.pv-identity {
+  padding: 8px 11px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.05);
+  font-size: 12px;
+  line-height: 1.6;
+  color: #0d1017;
+  word-break: break-word;
+}
+
+.pv-identity[data-state="empty"] {
+  color: #9ca3af;
+}
+
+.pv-modal-btn[type="button"] {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}

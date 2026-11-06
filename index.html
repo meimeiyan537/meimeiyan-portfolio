@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>梅美雁 Mei Meiyan · Portfolio</title>
+<meta name="description" content="梅美雁 — 产品设计师。从研究走向真实产品。AI 项目 / 产品设计 / 平面&品牌设计作品集。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' font-weight='bold' fill='%23bfe34d'>雁</text></svg>">
+<style>
+:root{
+  --bg:#0a0e16;
+  --ink:#f4f1ea;
+  --muted:rgba(244,241,234,.62);
+  --faint:rgba(244,241,234,.4);
+  --panel:rgba(255,255,255,.045);
+  --panel-2:rgba(255,255,255,.08);
+  --line:rgba(244,241,234,.13);
+  --lime:#bfe34d;
+  --lime-deep:#8fb832;
+  --orange:#f4a02c;
+  --radius:18px;
+  --maxw:1200px;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC","Helvetica Neue",system-ui,sans-serif;
+  overflow-x:hidden;
+  line-height:1.6;
+}
+::selection{background:var(--lime);color:#0a0e16}
+
+/* ================= CURSOR SYSTEM ================= */
+html.has-cursor,html.has-cursor *{cursor:none !important}
+/* 真·箭头光标：1:1 跟手，零延迟，只自带状态反馈 */
+.cursor{
+  position:fixed;left:0;top:0;width:26px;height:26px;
+  pointer-events:none;z-index:9000;
+  will-change:transform;contain:layout style;
+}
+.cur-inner{
+  position:relative;width:100%;height:100%;
+  transform-origin:4px 3px;
+  transition:transform .15s var(--ease);
+}
+.cur-arrow{display:block;width:26px;height:26px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+.cur-arrow path{fill:var(--ink);stroke:#0a0e16;stroke-width:1.1;stroke-linejoin:round;transition:fill .15s}
+.cur-label{
+  position:absolute;left:19px;top:16px;
+  opacity:0;transform:translateX(-5px) scale(.88);transform-origin:left center;
+  transition:opacity .15s var(--ease),transform .15s var(--ease);
+  font-size:9px;font-weight:800;letter-spacing:.14em;color:#15200a;
+  background:var(--lime);border-radius:999px;padding:3px 8px;white-space:nowrap;
+  text-transform:uppercase;pointer-events:none;
+}
+html[data-cursor="view"] .cur-inner,
+html[data-cursor="zoom"] .cur-inner,
+html[data-cursor="go"] .cur-inner,
+html[data-cursor="drag"] .cur-inner{transform:scale(1.18) rotate(-5deg)}
+html[data-cursor="view"] .cur-arrow path,
+html[data-cursor="zoom"] .cur-arrow path,
+html[data-cursor="go"] .cur-arrow path,
+html[data-cursor="drag"] .cur-arrow path{fill:var(--lime)}
+html[data-cursor="view"] .cur-label,
+html[data-cursor="zoom"] .cur-label,
+html[data-cursor="go"] .cur-label,
+html[data-cursor="drag"] .cur-label{opacity:1;transform:none}
+html.is-down .cur-inner{transform:scale(.88)}
+html.is-down[data-cursor="view"] .cur-inner,
+html.is-down[data-cursor="zoom"] .cur-inner,
+html.is-down[data-cursor="go"] .cur-inner{transform:scale(1.02) rotate(-5deg)}
+
+/* spotlight follows mouse */
+.spotlight{
+  position:fixed;left:0;top:0;width:620px;height:620px;border-radius:50%;
+  pointer-events:none;z-index:1;opacity:0;transition:opacity .6s;
+  background:radial-gradient(circle,rgba(191,227,77,.08),rgba(191,227,77,.022) 45%,transparent 68%);
+  transform:translate3d(-50%,-50%,0);will-change:transform;
+  mix-blend-mode:screen;contain:strict;
+}
+html.has-cursor .spotlight{opacity:1}
+
+/* work hover preview */
+.pv{
+  position:fixed;left:0;top:0;width:320px;height:200px;border-radius:14px;overflow:hidden;
+  pointer-events:none;z-index:8500;opacity:0;
+  transition:opacity .26s var(--ease);
+  box-shadow:0 28px 60px rgba(0,0,0,.6);border:1px solid rgba(244,241,234,.18);
+  will-change:transform;background:#11161f;
+}
+.pv.on{opacity:1}
+.pv img{width:100%;height:100%;object-fit:cover;display:block}
+.pv .pv-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#1a2130,#0f131c);font-size:12px;letter-spacing:.2em;color:var(--faint)}
+/* 多项目行：三张封面错落拼贴（左·料理箱 / 中·无人机横幅 / 右·警示灯） */
+.pv{transition:opacity .26s var(--ease)}
+.pv .pv-strip{display:none;position:relative;width:100%;height:100%}
+.pv.multi{width:580px;height:260px;background:transparent;border:none;box-shadow:none;overflow:visible}
+.pv.multi .pv-strip{display:block}
+.pv.multi #pvImg{display:none}
+.pv.multi .pv-strip img{
+  position:absolute;width:200px;height:210px;object-fit:cover;border-radius:12px;
+  border:1px solid rgba(244,241,234,.16);background:#11161f;
+  box-shadow:0 24px 48px rgba(0,0,0,.55);
+  opacity:0;transform:translateY(14px) rotate(0deg) scale(.96);
+  transition:opacity .3s var(--ease),transform .3s var(--ease);
+}
+.pv.multi.on .pv-strip img{opacity:1;transform:translateY(0) scale(1)}
+/* 左：料理箱 · 大幅竖图 */
+.pv.multi .pv-strip img:nth-child(1){left:2px;top:24px;transform:translateY(14px) rotate(-6deg) scale(.96);transition-delay:.02s}
+.pv.multi.on .pv-strip img:nth-child(1){transform:translateY(0) rotate(-6deg) scale(1)}
+/* 中：无人机 · 横幅居中，最高层 */
+.pv.multi .pv-strip img:nth-child(2){left:50%;top:4px;width:232px;height:172px;margin-left:-116px;z-index:3;transition-delay:.08s}
+/* 右：警示灯 · 略低略小 */
+.pv.multi .pv-strip img:nth-child(3){right:2px;top:48px;width:182px;height:186px;z-index:2;transform:translateY(14px) rotate(6deg) scale(.96);transition-delay:.14s}
+.pv.multi.on .pv-strip img:nth-child(3){transform:translateY(0) rotate(6deg) scale(1)}
+
+/* scroll progress */
+.prog{position:fixed;left:0;top:0;height:2.5px;width:0;z-index:9500;
+  background:linear-gradient(90deg,var(--lime),var(--orange));box-shadow:0 0 12px rgba(191,227,77,.5);
+  transition:width .08s linear}
+
+/* ---------- noise overlay ---------- */
+.noise{position:fixed;inset:0;z-index:99;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");}
+
+/* ---------- glow blobs ---------- */
+.blob{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;opacity:.5}
+.blob.b1{width:560px;height:560px;background:rgba(191,227,77,.10);top:-180px;right:-120px}
+.blob.b2{width:640px;height:640px;background:rgba(244,160,44,.06);bottom:-260px;left:-200px}
+
+/* ---------- nav ---------- */
+nav{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:100;
+  display:flex;align-items:center;gap:4px;padding:8px 10px;border-radius:999px;
+  background:rgba(14,18,28,.72);border:1px solid var(--line);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);}
+nav .logo{font-weight:800;font-size:15px;letter-spacing:.06em;padding:0 14px;color:var(--ink);text-decoration:none}
+nav .logo em{color:var(--lime);font-style:normal}
+nav a.nv{color:var(--muted);text-decoration:none;font-size:13.5px;padding:8px 14px;border-radius:999px;transition:.25s;letter-spacing:.03em;position:relative}
+nav a.nv:hover,nav a.nv.active{color:var(--ink);background:var(--panel-2)}
+nav a.nv.active::after{content:"";position:absolute;left:50%;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--lime);transform:translateX(-50%)}
+
+/* ---------- layout ---------- */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px;position:relative;z-index:2}
+section{padding:120px 0}
+
+/* ---------- stickers ---------- */
+.sticker{display:inline-block;background:#fff;color:#111;border-radius:14px;
+  padding:10px 18px;font-weight:800;font-size:15px;line-height:1.2;
+  box-shadow:0 10px 26px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.3);
+  border:2.5px solid #fff;position:relative;white-space:nowrap;user-select:none}
+.sticker .tag{color:#7ca322}
+.sticker.lime{background:var(--lime);color:#15200a;border-color:#fff}
+.sticker.outline{background:transparent;color:var(--ink);border:2.5px dashed rgba(244,241,234,.5);box-shadow:none}
+.sticker.pink{background:#ffc9d6;color:#61152b;border-color:#fff}
+.sticker.small{font-size:12.5px;padding:7px 13px;border-radius:11px}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-12px) rotate(var(--r,0deg))}}
+.float{animation:floaty 5s ease-in-out infinite;animation-delay:var(--d,0s)}
+/* depth parallax uses the independent `translate` property so it can't fight the float animation */
+[data-depth]{translate:var(--px,0px) var(--py,0px);transition:translate .45s var(--ease)}
+
+/* ---------- hero ---------- */
+.hero{min-height:100vh;display:flex;align-items:center;padding:140px 0 90px;position:relative;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center}
+.kicker{display:inline-flex;align-items:center;gap:10px;font-size:13px;letter-spacing:.28em;color:var(--lime);text-transform:uppercase;font-weight:700;margin-bottom:26px}
+.kicker::before{content:"";width:34px;height:2px;background:var(--lime)}
+h1.name{font-size:clamp(44px,7vw,84px);font-weight:900;line-height:1.08;letter-spacing:.01em}
+h1.name .ln{display:block;overflow:hidden;padding-bottom:.04em}
+h1.name .ln i{display:block;font-style:normal;transform:translateY(112%)}
+.in h1.name .ln i,h1.name .ln i{animation:riseIn 1s var(--ease) forwards}
+h1.name .ln:nth-child(1) i{animation-delay:.15s}
+h1.name .ln:nth-child(2) i{animation-delay:.28s}
+@keyframes riseIn{to{transform:none}}
+h1.name .en{display:block;font-size:.32em;font-weight:700;color:var(--muted);letter-spacing:.32em;margin-top:16px;opacity:0;animation:fadeUp .9s var(--ease) .55s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.hero p.intro{margin:30px 0 8px;font-size:17px;color:var(--muted);max-width:520px;opacity:0;animation:fadeUp .9s var(--ease) .7s forwards}
+.hero p.intro b{color:var(--ink)}
+.hero-cta{margin-top:34px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;opacity:0;animation:fadeUp .9s var(--ease) .85s forwards}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 26px;border-radius:999px;
+  background:var(--lime);color:#15200a;font-weight:800;font-size:15px;text-decoration:none;
+  transition:box-shadow .25s,background .25s,color .25s,border-color .25s;
+  box-shadow:0 12px 30px rgba(191,227,77,.25);position:relative;overflow:hidden;will-change:transform}
+.btn span{position:relative;z-index:2}
+.btn::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 20%,rgba(255,255,255,.55),transparent 80%);
+  transform:translateX(-130%);transition:transform .6s var(--ease)}
+.btn:hover::before{transform:translateX(130%)}
+.btn:hover{box-shadow:0 16px 38px rgba(191,227,77,.35)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
+.btn.ghost::before{background:linear-gradient(120deg,transparent 20%,rgba(191,227,77,.18),transparent 80%)}
+.btn.ghost:hover{border-color:var(--lime);color:var(--lime)}
+.hero-art{position:relative;height:640px}
+.ip-stage{position:absolute;right:0;bottom:-30px;width:min(420px,100%);z-index:2}
+/* 贴纸板：白底 + 方格纸网格 + 四角柔和色块 */
+.ip-stage:before{content:'';position:absolute;left:-3%;right:-1%;top:2%;bottom:4%;
+  background:
+    radial-gradient(circle at 16% 20%, rgba(124,163,34,.20), transparent 42%),
+    radial-gradient(circle at 84% 16%, rgba(255,150,178,.18), transparent 40%),
+    radial-gradient(circle at 74% 84%, rgba(122,178,255,.16), transparent 44%),
+    radial-gradient(circle at 22% 82%, rgba(255,208,96,.18), transparent 42%),
+    linear-gradient(rgba(21,32,10,.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(21,32,10,.055) 1px, transparent 1px),
+    #fbfaf6;
+  background-size:auto,auto,auto,auto,26px 26px,26px 26px,auto;
+  border-radius:26px;border:1.5px solid rgba(244,241,234,.16);
+  box-shadow:0 34px 70px rgba(0,0,0,.55);
+  transform:rotate(-1.2deg);z-index:0}
+.hero-art .ip{position:relative;z-index:1;width:100%;display:block;filter:drop-shadow(0 30px 50px rgba(0,0,0,.5));
+  cursor:pointer;transform-origin:50% 88%;transition:transform .5s var(--ease)}
+.ip-stage:hover .ip{transform:translateY(-6px) scale(1.02)}
+.ip-stage:active .ip{transform:translateY(3px) scale(.985)}
+.ip-stage.pop .ip{animation:ipPop .55s var(--ease)}
+.hero-art .ip.swap{animation:ipSwap .45s var(--ease)}
+/* 眼睛跟随图层：叠在主形象脸上，JS 驱动 --ex/--ey 平移 */
+.ip-eyes{position:absolute;left:38.84%;top:30.89%;width:35.51%;z-index:2;pointer-events:none;
+  transform:translate(var(--ex,0px),var(--ey,0px));opacity:1;transition:opacity .18s ease;will-change:transform}
+.ip-eyes.off{opacity:0}
+@keyframes ipSwap{0%{opacity:.5;scale:.975}60%{opacity:1;scale:1.012}100%{opacity:1;scale:1}}
+@keyframes ipPop{
+  0%{transform:scale(1)}30%{transform:scale(1.07) rotate(-2.5deg)}
+  62%{transform:scale(.975) rotate(1.5deg)}100%{transform:scale(1)}}
+/* 对话气泡 */
+.ip-bubble{position:absolute;left:-14%;top:9%;max-width:236px;padding:10px 15px 11px;border-radius:18px;
+  font-size:14px;font-weight:600;line-height:1.4;color:#15200a;background:#fff;z-index:5;
+  box-shadow:0 16px 34px rgba(0,0,0,.5);pointer-events:none;
+  opacity:0;transform:translateY(10px) scale(.92) rotate(-4deg);transform-origin:12% 100%;
+  transition:opacity .2s var(--ease),transform .34s cubic-bezier(.2,1.5,.4,1)}
+.ip-bubble.on{opacity:1;transform:translateY(0) scale(1) rotate(-2deg)}
+.ip-bubble b{display:block;font-size:11px;letter-spacing:.14em;opacity:.5;margin-bottom:2px}
+.ip-bubble:after{content:'';position:absolute;left:20px;bottom:-7px;width:15px;height:15px;
+  background:inherit;border-radius:2px;transform:rotate(45deg)}
+.ip-bubble[data-tone="pink"]{background:#ffd7e0}
+.ip-bubble[data-tone="lime"]{background:var(--lime)}
+.ip-bubble[data-tone="yellow"]{background:#ffe89b}
+.ip-bubble[data-tone="blue"]{background:#d3e6ff}
+.ip-bubble[data-tone="purple"]{background:#e4dbff}
+.ip-hint{position:absolute;right:4%;bottom:4%;z-index:5;padding:6px 12px;border-radius:999px;
+  font-size:12px;letter-spacing:.12em;color:var(--ink);background:rgba(18,23,31,.86);
+  border:1.5px dashed rgba(244,241,234,.4);animation:hintFloat 2.6s ease-in-out infinite;
+  transition:opacity .45s var(--ease),transform .45s var(--ease);pointer-events:none}
+.ip-hint.gone{opacity:0;transform:translateY(6px)}
+@keyframes hintFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.hero-art .s1{position:absolute;left:-4%;top:8%;--r:-8deg;z-index:3}
+.hero-art .s2{position:absolute;left:0%;top:17.5%;--r:6deg;z-index:3}
+.hero-art .s3{position:absolute;left:-2%;top:27.5%;--r:-5deg;z-index:3}
+.hero-art .s4{position:absolute;right:0%;top:31%;--r:7deg;z-index:3}
+.hero-art .stkr-img{position:absolute;width:106px;filter:drop-shadow(0 16px 30px rgba(0,0,0,.5));z-index:3}
+.hero-art .stkr-img.wink{right:-1%;top:6%;transform:rotate(8deg)}
+.hero-art .stkr-img.cheer{left:-2%;bottom:-10%;width:88px;transform:rotate(-7deg)}
+/* 招财云：点击撒钱（美元 → 金币循环），带累计金额 */
+.cloud-wrap{position:absolute;right:min(144px,calc(50% - 66px));top:-11%;width:132px;z-index:6;cursor:pointer;
+  filter:drop-shadow(0 18px 30px rgba(0,0,0,.5));outline:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.cloud-wrap:focus-visible .cloud-svg{stroke:var(--lime)}
+.cloud-svg{width:100%;display:block;transform-origin:50% 100%}
+.cloud-wrap:hover .cloud-svg{transform:scale(1.06)}
+.cloud-wrap.burst .cloud-svg{animation:cloudSquash .55s var(--ease)}
+@keyframes cloudSquash{0%{transform:scale(1)}28%{transform:scale(1.16,.82)}55%{transform:scale(.92,1.1)}100%{transform:scale(1)}}
+.cloud-tag{position:absolute;left:50%;bottom:-24px;transform:translateX(-50%) rotate(-2deg);white-space:nowrap;
+  font-size:10.5px;font-weight:700;letter-spacing:.14em;color:#15200a;background:var(--lime);
+  border:2px solid #fff;border-radius:999px;padding:3px 10px;box-shadow:0 6px 16px rgba(0,0,0,.4);
+  transition:background .25s,color .25s}
+.cloud-wrap[data-mode="coin"] .cloud-tag{background:#ffd75e}
+.cloud-wrap[data-mode="rmb"] .cloud-tag{background:#ff9d9d}
+.cloud-jar{position:absolute;left:-14px;top:-12px;background:#fff;color:#15200a;font-size:11px;font-weight:800;
+  border-radius:999px;padding:3px 9px;box-shadow:0 6px 14px rgba(0,0,0,.45);transform:rotate(-6deg);
+  font-variant-numeric:tabular-nums;transition:transform .18s var(--ease)}
+.cloud-jar.pop{transform:rotate(-6deg) scale(1.22)}
+.money{position:absolute;z-index:5;pointer-events:none;will-change:transform,opacity;
+  animation:moneyFall var(--dur,1.9s) cubic-bezier(.45,.05,.65,1) forwards}
+.money svg{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45))}
+@keyframes moneyFall{
+  0%{transform:translate(0,0) rotate(0deg);opacity:0}
+  10%{opacity:1}
+  82%{opacity:1}
+  100%{transform:translate(var(--sway,40px),var(--fall,560px)) rotate(var(--rot,220deg));opacity:0}
+}
+.hero-badges{margin-top:40px;display:flex;gap:10px;flex-wrap:wrap;opacity:0;animation:fadeUp .9s var(--ease) 1s forwards}
+.hero-qr{margin-top:30px;display:inline-flex;align-items:center;gap:13px;background:#fff;border-radius:16px;padding:10px 18px 10px 10px;
+  width:max-content;transform:rotate(-2.5deg);box-shadow:0 16px 34px rgba(0,0,0,.5);
+  opacity:0;animation:fadeUp .9s var(--ease) 1.15s forwards;transition:transform .4s var(--ease)}
+.hero-qr img{width:86px;height:86px;border-radius:9px;display:block}
+.hero-qr span{font-size:13.5px;font-weight:600;color:#15200a;line-height:1.45}
+.hero-qr b{display:block;font-size:10.5px;letter-spacing:.18em;opacity:.45;margin-bottom:3px}
+.hero-qr:hover{transform:rotate(-2.5deg) translateY(-5px) scale(1.03)}
+.chip{font-size:12.5px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 14px;letter-spacing:.04em}
+.scroll-hint{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);color:var(--faint);font-size:12px;letter-spacing:.3em;display:flex;flex-direction:column;align-items:center;gap:10px}
+.scroll-hint::after{content:"";width:1px;height:44px;background:linear-gradient(to bottom,var(--lime),transparent);animation:drip 1.8s ease-in-out infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}55%{transform:scaleY(1);transform-origin:top}56%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ---------- marquee ---------- */
+.marquee{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;position:relative;z-index:2;background:rgba(255,255,255,.015)}
+.mq-track{display:flex;gap:44px;width:max-content;animation:mq 34s linear infinite;will-change:transform}
+.mq-track span{font-size:clamp(20px,2.6vw,34px);font-weight:900;letter-spacing:.06em;color:transparent;-webkit-text-stroke:1px rgba(244,241,234,.34);white-space:nowrap;display:flex;align-items:center;gap:44px}
+.mq-track span b{color:var(--lime);-webkit-text-stroke:0}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* ---------- section heads ---------- */
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:20px;margin-bottom:60px;flex-wrap:wrap}
+.sec-head h2{font-size:clamp(36px,4.6vw,58px);font-weight:900;letter-spacing:.02em}
+.sec-head h2 span{color:var(--lime)}
+.sec-head .sub{color:var(--muted);font-size:15px;max-width:440px}
+
+/* ---------- resume ---------- */
+.resume-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:34px;
+  transition:background .3s,border-color .3s,box-shadow .3s;will-change:transform;position:relative;overflow:hidden}
+.card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;
+  background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%),rgba(191,227,77,.09),transparent 70%)}
+.card:hover{background:var(--panel-2);border-color:rgba(191,227,77,.28)}
+.card:hover::after{opacity:1}
+.card h3{font-size:13px;letter-spacing:.26em;color:var(--lime);text-transform:uppercase;margin-bottom:26px;display:flex;align-items:center;gap:10px}
+.card h3 svg{width:17px;height:17px;stroke:var(--lime)}
+.tl{position:relative;padding-left:26px}
+.tl::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:1.5px;background:var(--line)}
+.tl-item{position:relative;padding-bottom:30px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:"";position:absolute;left:-26px;top:7px;width:11px;height:11px;border-radius:50%;background:var(--bg);border:2.5px solid var(--lime)}
+.tl-item .when{font-size:12px;letter-spacing:.14em;color:var(--faint);text-transform:uppercase}
+.tl-item .what{font-weight:800;font-size:17px;margin:5px 0 3px}
+.tl-item .what em{font-style:normal;color:var(--lime);font-size:13px;font-weight:700;margin-left:8px}
+.tl-item p{font-size:13.5px;color:var(--muted)}
+.exp-item{padding:18px 0;border-bottom:1px dashed var(--line)}
+.exp-item:last-child{border-bottom:none;padding-bottom:0}
+.exp-item .when{font-size:12px;letter-spacing:.1em;color:var(--faint)}
+.exp-item .what{font-weight:800;font-size:16px;margin:4px 0 2px}
+.exp-item .what em{font-style:normal;color:var(--muted);font-weight:600;font-size:12.5px;margin-left:8px}
+.exp-item p{font-size:13px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chips .c{background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:9px 16px;font-size:13.5px;transition:.25s}
+.chips .c:hover{border-color:rgba(191,227,77,.45);color:var(--ink);transform:translateY(-2px)}
+.chips .c b{color:var(--lime);font-weight:800;margin-right:4px}
+.contact-rows{display:flex;flex-direction:column;gap:16px}
+.contact-rows .row{display:flex;align-items:center;gap:14px;font-size:14.5px}
+.contact-rows .row .lab{color:var(--faint);font-size:12px;letter-spacing:.18em;width:72px;text-transform:uppercase}
+.contact-rows .row a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line);transition:.2s;position:relative}
+.contact-rows .row a:hover{color:var(--lime);border-color:var(--lime)}
+
+/* ---------- works index ---------- */
+.works-list{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.work-row{display:grid;grid-template-columns:110px 1fr auto;gap:28px;align-items:center;padding:44px 12px;
+  border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);position:relative;overflow:hidden}
+.work-row::before{content:"";position:absolute;inset:0;background:var(--panel);opacity:0;transition:opacity .35s;z-index:0}
+.work-row:hover::before{opacity:1}
+.work-row::after{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--lime);transform:scaleY(0);transform-origin:top;transition:transform .4s var(--ease)}
+.work-row:hover::after{transform:scaleY(1)}
+.work-row > *{position:relative;z-index:1;transition:transform .4s var(--ease)}
+.work-row:hover > *{transform:translateX(16px)}
+.work-row .no{font-size:44px;font-weight:900;color:transparent;-webkit-text-stroke:1.5px rgba(244,241,234,.4);transition:color .3s,-webkit-text-stroke-color .3s}
+.work-row:hover .no{color:var(--lime);-webkit-text-stroke:1.5px var(--lime)}
+.work-row .t{font-size:26px;font-weight:800}
+.work-row .d{font-size:13.5px;color:var(--muted);margin-top:6px}
+.work-row .go{color:var(--faint);font-size:13px;letter-spacing:.2em;transition:color .3s}
+.work-row:hover .go{color:var(--lime)}
+/* pending rows: 整理中，无预览卡 */
+.work-row.pending .no{-webkit-text-stroke-color:rgba(244,241,234,.25)}
+.work-row.pending:hover .no{color:transparent;-webkit-text-stroke:1.5px rgba(191,227,77,.55)}
+.work-row .go.soon{display:flex;align-items:center;gap:8px;letter-spacing:.18em;color:var(--faint)}
+.work-row .go.soon i{width:7px;height:7px;border-radius:50%;background:var(--lime);opacity:.85;animation:soonPulse 1.8s ease-in-out infinite}
+@keyframes soonPulse{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+
+/* ---------- project detail ---------- */
+.proj{padding:100px 0;border-top:1px solid var(--line);position:relative}
+.proj-head{display:grid;grid-template-columns:auto 1fr;gap:44px;align-items:center;margin-bottom:54px}
+.proj-no{font-size:clamp(70px,9vw,130px);font-weight:900;line-height:.9;color:transparent;-webkit-text-stroke:2px rgba(191,227,77,.55)}
+.proj-head h3{font-size:clamp(30px,3.6vw,46px);font-weight:900}
+.proj-head h3 span{color:var(--lime)}
+.proj-head p{color:var(--muted);max-width:640px;margin-top:12px;font-size:15px}
+.proj-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.cover{border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.45);
+  position:relative;background:#0d121b}
+.cover img{width:100%;height:auto;display:block;transition:transform .9s var(--ease)}
+.cover::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(700px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.10),transparent 60%);opacity:0;transition:opacity .4s}
+.cover:hover::after{opacity:1}
+.cover:hover img{transform:scale(1.015)}
+
+.gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:22px}
+.gallery figure{border-radius:14px;overflow:hidden;border:1px solid var(--line);cursor:zoom-in;
+  position:relative;background:#0d121b;transition:border-color .3s,box-shadow .3s;
+  will-change:transform;transform-style:preserve-3d;backface-visibility:hidden}
+.gallery figure:hover{border-color:rgba(191,227,77,.55);box-shadow:0 26px 60px rgba(0,0,0,.55)}
+.gallery figure::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .35s;
+  background:radial-gradient(420px circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.14),transparent 62%)}
+.gallery figure:hover::after{opacity:1}
+.gallery img{width:100%;height:auto;display:block;aspect-ratio:16/9;object-fit:cover;object-position:top center;
+  transition:filter .35s}
+.gallery figure:hover img{filter:saturate(1.06) contrast(1.02)}
+.gallery figcaption{position:absolute;left:12px;bottom:12px;background:rgba(10,14,22,.78);backdrop-filter:blur(8px);
+  font-size:11.5px;letter-spacing:.08em;padding:6px 12px;border-radius:999px;color:rgba(244,241,234,.86);
+  transform:translateY(6px);opacity:0;transition:.35s var(--ease)}
+.gallery figure:hover figcaption{transform:none;opacity:1}
+.gallery .idx{position:absolute;right:12px;top:12px;font-size:10.5px;letter-spacing:.16em;color:rgba(244,241,234,.5);
+  background:rgba(10,14,22,.6);border:1px solid rgba(244,241,234,.12);padding:4px 9px;border-radius:999px;backdrop-filter:blur(6px)}
+.coming{border:1.5px dashed var(--line);border-radius:var(--radius);padding:70px 40px;text-align:center;color:var(--muted);position:relative;overflow:hidden}
+.coming .big{font-size:26px;font-weight:800;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+.coming p{font-size:14px;max-width:460px;margin:0 auto}
+
+/* ---------- lightbox ---------- */
+.lb{position:fixed;inset:0;z-index:200;background:rgba(6,8,13,.96);display:none;align-items:center;justify-content:center;
+  backdrop-filter:blur(10px);flex-direction:column;gap:18px}
+.lb.on{display:flex}
+.lb-stage{flex:1;display:flex;align-items:center;justify-content:center;width:100%;padding:0 90px;min-height:0}
+.lb img{max-width:min(94vw,1760px);max-height:78vh;border-radius:10px;box-shadow:0 40px 120px rgba(0,0,0,.8);
+  animation:lbIn .45s var(--ease)}
+@keyframes lbIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+.lb .btn-x,.lb .prev,.lb .next{position:absolute;background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--ink);
+  width:48px;height:48px;border-radius:50%;cursor:pointer;font-size:19px;display:flex;align-items:center;justify-content:center;transition:.2s;z-index:3}
+.lb .btn-x{top:26px;right:26px}
+.lb .prev{left:26px;top:50%;transform:translateY(-50%)}
+.lb .next{right:26px;top:50%;transform:translateY(-50%)}
+.lb .prev:hover,.lb .next:hover,.lb .btn-x:hover{background:var(--lime);color:#15200a;border-color:var(--lime)}
+.lb .cap{color:var(--muted);font-size:13px;letter-spacing:.12em;text-align:center;flex-shrink:0}
+.lb-strip{display:flex;gap:8px;padding:0 40px 26px;overflow-x:auto;max-width:min(96vw,1400px);scrollbar-width:none}
+.lb-strip::-webkit-scrollbar{display:none}
+.lb-strip img{width:88px;height:50px;object-fit:cover;border-radius:5px;opacity:.4;border:1.5px solid transparent;transition:.25s;cursor:pointer;flex-shrink:0;animation:none;box-shadow:none}
+.lb-strip img:hover{opacity:.8}
+.lb-strip img.cur{opacity:1;border-color:var(--lime)}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--line);padding:110px 0 60px;position:relative;overflow:hidden}
+footer .say{font-size:clamp(38px,5.5vw,72px);font-weight:900;line-height:1.15}
+footer .say span{color:var(--lime)}
+footer .rows{margin:44px 0 70px;display:flex;flex-wrap:wrap;align-items:center;gap:20px 60px;justify-content:start}
+/* 页尾微信二维码贴纸卡 */
+.foot-qr-wrap{align-self:start}
+.foot-qr{display:inline-flex;align-items:center;gap:13px;background:#fff;border-radius:16px;padding:10px 18px 10px 10px;
+  width:max-content;transform:rotate(-2.5deg);box-shadow:0 16px 34px rgba(0,0,0,.5);
+  transition:transform .4s var(--ease)}
+.foot-qr:hover{transform:rotate(-2.5deg) translateY(-4px)}
+.foot-qr img{width:86px;height:86px;border-radius:9px;display:block}
+.foot-qr span{font-size:13.5px;font-weight:600;color:#15200a;line-height:1.45}
+.foot-qr b{display:block;font-size:10.5px;letter-spacing:.18em;opacity:.45;margin-bottom:3px}
+footer .rows .lab{font-size:11px;letter-spacing:.24em;color:var(--faint);text-transform:uppercase;margin-bottom:6px}
+footer .rows .val{font-size:16px;font-weight:700}
+footer .rows a{color:var(--ink);text-decoration:none;transition:.2s}
+footer .rows a:hover{color:var(--lime)}
+/* 点击复制联系方式 */
+.copy-line{appearance:none;background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--ink);
+  cursor:pointer;border-bottom:1px dashed color-mix(in srgb,var(--lime) 55%,transparent);transition:.2s;position:relative}
+.copy-line:hover{color:var(--lime);border-bottom-style:solid}
+.copy-line.ok{color:var(--lime)}
+.copy-hint{margin-left:10px;font-size:11px;font-weight:400;letter-spacing:.08em;color:var(--faint);transition:.25s}
+.copy-line:hover~.copy-hint,.copy-line.ok~.copy-hint{color:var(--lime)}
+.toast{position:fixed;left:50%;bottom:7%;transform:translate(-50%,18px);z-index:9999;pointer-events:none;
+  background:var(--lime);color:#0a0e16;font-size:13.5px;font-weight:700;letter-spacing:.02em;
+  padding:11px 22px;border-radius:999px;box-shadow:0 14px 34px rgba(0,0,0,.45);
+  opacity:0;transition:opacity .28s var(--ease),transform .28s var(--ease);white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.foot-bottom{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;color:var(--faint);font-size:12.5px;letter-spacing:.08em;position:relative;z-index:3;padding-right:240px}
+.wordmark{font-size:clamp(60px,10vw,150px);font-weight:900;letter-spacing:.02em;line-height:.9;
+  background:linear-gradient(180deg,#d7ef7a,#6f9420);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:.9;user-select:none}
+.foot-stkr{position:absolute;right:6%;top:70px;--r:8deg;transform:rotate(8deg)}
+.foot-ip{position:absolute;right:3.5%;bottom:6px;width:170px;transform:rotate(-6deg);filter:drop-shadow(0 20px 40px rgba(0,0,0,.5));opacity:.95;z-index:1}
+
+/* ---------- reveal on scroll ---------- */
+.rv{opacity:0;transform:translateY(34px);transition:opacity .85s var(--ease),transform .85s var(--ease)}
+.rv.in{opacity:1;transform:none}
+
+@media (max-width:980px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-art{height:480px;order:-1}
+  .cloud-wrap{width:104px;top:-7%;right:calc(6% + 98px);left:auto}
+  .ip-stage{width:300px;right:6%}
+  .resume-grid{grid-template-columns:1fr}
+  .work-row{grid-template-columns:70px 1fr auto;gap:16px}
+  .work-row .no{font-size:30px}
+  .gallery{grid-template-columns:1fr}
+  .proj-head{grid-template-columns:1fr;gap:14px}
+  footer .rows{gap:24px}
+  .foot-qr{transform:rotate(-2deg)}
+  section{padding:80px 0}
+  .lb-stage{padding:0 16px}
+  .lb .prev,.lb .next{width:40px;height:40px}
+}
+@media (pointer:coarse){
+  .cursor,.spotlight{display:none}
+  html.has-cursor,html.has-cursor *{cursor:auto !important}
+}
+/* 手机窄屏适配：词条避让主 IP、标题字号防尴尬断行 */
+@media (max-width:640px){
+  .hero-art .s3{display:none}
+  .hero-art .s4{top:37%}
+  h1.name{font-size:clamp(30px,8.4vw,44px)}
+  .hero-qr{margin-top:20px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+  .cursor,.spotlight,.pv{display:none}
+  html.has-cursor,html.has-cursor *{cursor:auto !important}
+}
+</style>
+</head>
+<body>
+
+<div class="prog" id="prog"></div>
+<div class="noise"></div>
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+<div class="spotlight" id="spot"></div>
+<div class="cursor" id="cur">
+  <div class="cur-inner">
+    <svg class="cur-arrow" viewBox="0 0 26 26" aria-hidden="true">
+      <path d="M4 3 L20.5 12.7 L13.5 14.3 L10.2 21.7 Z"/>
+    </svg>
+    <span class="cur-label" id="curLabel"></span>
+  </div>
+</div>
+<div class="pv" id="pv"><img id="pvImg" alt=""><div class="pv-strip" id="pvStrip"></div></div>
+
+<nav id="nav">
+  <a class="logo" href="#top">雁<em>.</em>STUDIO</a>
+  <a class="nv" href="#resume" data-cur="go" data-label="GO">Résumé</a>
+  <a class="nv" href="#works" data-cur="go" data-label="GO">Works</a>
+  <a class="nv" href="#contact" data-cur="go" data-label="GO">Contact</a>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="kicker">Hi! 我是梅美雁 · Mei Meiyan</div>
+      <h1 class="name">
+        <span class="ln"><i>从研究，</i></span>
+        <span class="ln"><i>走向真实产品。</i></span>
+        <span class="en">PRODUCT / UX / BRAND DESIGNER</span>
+      </h1>
+      <p class="intro">会做设计的<b>产品经理</b>，也会做产品的<b>设计师</b>——既能从<b>调研</b>里挖出真问题，也能把方案一路推进到<b>落地原型</b>，广东工业大学 <b>艺术与设计学院</b> <b>工业设计工程</b> 硕士在读。用户访谈能做，需求文档能写，数据能看，界面能画；从 <b>AI 创作</b>、<b>消费产品</b> 到 <b>城市文旅 IP</b>，全链路自己扛。设计总要有点意外，而好产品需要有人兜住每一种意外。</p>
+      <div class="hero-cta">
+        <a class="btn magnet" href="#works" data-cur="go" data-label="GO"><span>看看我的作品 ↓</span></a>
+        <a class="btn ghost magnet" href="#resume" data-cur="go" data-label="GO"><span>Résumé</span></a>
+      </div>
+      <div class="hero-qr">
+        <img src="assets/ip/qr-wechat.png" alt="微信二维码，扫码加我">
+        <span><b>WECHAT</b>扫码加我 · 交换名片</span>
+      </div>
+      <div class="hero-badges">
+        <span class="chip">米兰设计周 · 省级二等奖</span>
+        <span class="chip">两岸设计年度奖 · 银奖</span>
+        <span class="chip">广东广州 · 23 岁</span>
+      </div>
+    </div>
+    <div class="hero-art" id="heroArt">
+      <span class="sticker lime float s1 magnet" data-depth="26" style="--d:.3s"># 灵感吸引体质</span>
+      <span class="sticker float s2 magnet" data-depth="18" style="--d:1.1s"># 设计总要有点意外</span>
+      <span class="sticker outline float s3" data-depth="34" style="--d:1.8s"># 在理性中保留一点天马行空</span>
+      <span class="sticker pink float s4 magnet" data-depth="22" style="--d:2.4s">offer来</span>
+      <img class="stkr-img wink float" data-depth="46" style="--d:.6s" src="assets/ip/ip-wink.png" alt="IP 形象贴纸 · 比耶">
+      <img class="stkr-img cheer float" data-depth="58" style="--d:1.4s" src="assets/ip/ip-cheer.png" alt="IP 形象贴纸 · 加油">
+      <div class="ip-stage" id="ipStage">
+        <div class="ip-bubble" id="ipBubble" data-tone="pink"><b>OH WOW!</b><span id="ipBubbleTxt">你戳到我啦～</span></div>
+        <img class="ip" id="ipChar" data-depth="12" src="assets/ip/ip-hero.png" alt="梅美雁 IP 形象，点一下会换表情" role="button" tabindex="0">
+        <span class="ip-hint" id="ipHint">戳我一下</span>
+      </div>
+      <div class="cloud-wrap float" id="cloudWrap" data-depth="30" style="--d:2.2s" data-cur="go" data-label="RAIN" role="button" tabindex="0" aria-label="点我撒钱：美元 / 金币 / 人民币">
+        <svg class="cloud-svg" viewBox="0 0 140 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <g>
+            <path d="M38 74c-14 0-24-9-24-21 0-11 8-19 19-21 3-13 14-22 28-22 13 0 24 8 28 20 12 1 21 10 21 21 0 13-11 23-26 23H38z" fill="#fdfcf8" stroke="#ffffff" stroke-width="7" stroke-linejoin="round"/>
+            <path d="M38 74c-14 0-24-9-24-21 0-11 8-19 19-21 3-13 14-22 28-22 13 0 24 8 28 20 12 1 21 10 21 21 0 13-11 23-26 23H38z" fill="none" stroke="rgba(10,14,22,.08)" stroke-width="2.5" stroke-linejoin="round" transform="translate(0 2.5)"/>
+            <circle cx="56" cy="56" r="3.1" fill="#22262e"/>
+            <circle cx="84" cy="56" r="3.1" fill="#22262e"/>
+            <path d="M60 66q10 8 20 0" fill="none" stroke="#22262e" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="47" cy="63" r="4.5" fill="#ffc9d6" opacity=".75"/>
+            <circle cx="93" cy="63" r="4.5" fill="#ffc9d6" opacity=".75"/>
+          </g>
+        </svg>
+        <span class="cloud-tag" id="cloudTag">点我 · 撒钱</span>
+        <span class="cloud-jar" id="cloudJar">$0</span>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint">SCROLL</div>
+</header>
+
+<div class="marquee">
+  <div class="mq-track" id="mqTrack">
+    <span>PRODUCT DESIGN <b>·</b> AI CREATION <b>·</b> UX RESEARCH <b>·</b> BRAND IP <b>·</b></span>
+    <span>PRODUCT DESIGN <b>·</b> AI CREATION <b>·</b> UX RESEARCH <b>·</b> BRAND IP <b>·</b></span>
+  </div>
+</div>
+
+<!-- ============ RESUME ============ -->
+<section id="resume">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <h2>Résumé<span>.</span></h2>
+      <div class="sub">教育、经历、奖项与工具箱——一份不太无聊的简历。</div>
+    </div>
+    <div class="resume-grid">
+      <div class="card rv tilt-card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>Education · 教育</h3>
+        <div class="tl">
+          <div class="tl-item">
+            <div class="when">2025.09 — 至今</div>
+            <div class="what">广东工业大学<em>硕士在读</em></div>
+            <p>艺术与设计学院 · 工业设计工程</p>
+          </div>
+          <div class="tl-item">
+            <div class="when">2021.09 — 2025.07</div>
+            <div class="what">广州商学院<em>本科</em></div>
+            <p>艺术设计学院 · 产品设计专业 · 校级优秀毕业生 / 优秀毕业论文</p>
+          </div>
+        </div>
+      </div>
+      <div class="card rv tilt-card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>Experience · 经历</h3>
+        <div class="exp-item">
+          <div class="when">2025.11 — 至今</div>
+          <div class="what">居家养老助行机器人<em>在研课题 · 产品设计</em></div>
+          <p>基于用户洞察输出产品方案：外观造型 / CMF 设计 / 交互原型，融合柔性与医疗器械舒适感。</p>
+        </div>
+        <div class="exp-item">
+          <div class="when">2025.09 — 2025.12</div>
+          <div class="what">机箱机器人体验与外观设计<em>校企项目</em></div>
+          <p>面向台式机箱外观升级：模块化纹理与接口装饰、面板改进、工艺落地。</p>
+        </div>
+        <div class="exp-item">
+          <div class="when">2025.11 — 2025.12</div>
+          <div class="what">儿童藏族文化教学玩具设计<em>未来设计师大赛 · 省二等奖</em></div>
+          <p>以地区草原生态场景为主题，山脉河流等模块化拼接交互设计。</p>
+        </div>
+        <div class="exp-item">
+          <div class="when">2024.09 — 2024.12</div>
+          <div class="what">海上丝绸之路 APP 界面设计<em>导师课题 · UI 设计</em></div>
+          <p>数字展陈导览界面，独立完成视觉框架与轻量交互。</p>
+        </div>
+      </div>
+      <div class="card rv tilt-card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6m12 5h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22m7-7.34V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>Awards · 奖项</h3>
+        <div class="chips">
+          <span class="c"><b>省级二等奖</b>米兰设计周 · HandPrep 单手备菜篮</span>
+          <span class="c"><b>省级三等奖 ×2</b>米兰设计周 · 珠玑号 / StepSecure 助行器</span>
+          <span class="c"><b>银奖</b>两岸设计年度奖 · 森林巡检无人机</span>
+          <span class="c"><b>奖学金 ×2</b>校级二等 / 三等</span>
+          <span class="c"><b>三等奖</b>中国好创意 · 大学广告艺术大赛</span>
+        </div>
+      </div>
+      <div class="card rv tilt-card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Toolbox · 技能</h3>
+        <div class="chips">
+          <span class="c">Figma</span><span class="c">Rhino</span><span class="c">KeyShot</span>
+          <span class="c">Photoshop</span><span class="c">Illustrator</span><span class="c">Procreate</span>
+          <span class="c">SPSS</span><span class="c">剪映</span><span class="c">AIGC 工具链</span>
+          <span class="c">CET-4</span><span class="c">普通话二甲</span>
+        </div>
+        <div style="height:26px"></div>
+        <div class="contact-rows">
+          <div class="row"><span class="lab">Mail</span><a href="mailto:2664189463@qq.com" data-copy="2664189463@qq.com" data-cur="go" data-label="COPY">2664189463@qq.com</a></div>
+          <div class="row"><span class="lab">WeChat</span><button class="copy-line" data-copy="G6662333M" data-copyname="微信号" data-cur="go" data-label="COPY">G6662333M</button></div>
+          <div class="row"><span class="lab">Tel</span><a href="tel:13631879860" data-copy="13631879860" data-cur="go" data-label="COPY">136 3187 9860</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORKS INDEX ============ -->
+<section id="works">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <h2>Works<span>.</span></h2>
+      <div class="sub">四个方向的创作：AI 项目与工作台、产品设计、平面与品牌。</div>
+    </div>
+    <div class="works-list rv">
+      <a class="work-row" href="scanmeet/workbench.html" target="_blank" rel="noopener" data-cur="go" data-label="DEMO">
+        <div class="no">01</div>
+        <div><div class="t">AI 项目一 · AI 工作台</div><div class="d">码上见 ScanMeet · 销售数字名片 + 资料包 · 可交互原型</div></div>
+        <div class="go">OPEN →</div>
+      </a>
+      <a class="work-row pending" href="#w-ai2" data-cur="go" data-label="SOON">
+        <div class="no">02</div>
+        <div><div class="t">AI 项目二</div><div class="d">AI 创作实践 · 整理中</div></div>
+        <div class="go soon"><i></i>SOON</div>
+      </a>
+      <a class="work-row" href="#w-pd" data-cur="view" data-label="VIEW">
+        <div class="no">03</div>
+        <div><div class="t">产品设计</div><div class="d">OOC 户外料理箱 · 航巡巡检无人机 · Red Alert 警示灯</div></div>
+        <div class="go">VIEW →</div>
+      </a>
+      <a class="work-row" href="#w-brand" data-cur="view" data-label="VIEW">
+        <div class="no">04</div>
+        <div><div class="t">平面 & 品牌设计</div><div class="d">南头荔记 · 深圳农文旅城市 IP</div></div>
+        <div class="go">VIEW →</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 01 AI WORKBENCH (ScanMeet) ============ -->
+<section class="proj" id="w-ai1">
+  <div class="wrap">
+    <div class="proj-head rv">
+      <div class="proj-no">01</div>
+      <div>
+        <h3>AI 项目一 · AI 工作台 <span>SCANMEET</span></h3>
+        <p>码上见 ScanMeet —— 面向 B2B 展会场景的销售数字名片与资料包工具：访客扫码即看名片、浏览资料、留下线索；销售端工作台实时掌握名片浏览、独立访客、留资转化与平均停留。</p>
+        <div class="proj-tags">
+          <span class="chip">数字名片</span><span class="chip">数据总览</span><span class="chip">访客追踪</span><span class="chip">多语言</span><span class="chip">可交互原型</span>
+        </div>
+      </div>
+    </div>
+    <div class="coming rv">
+      <div class="big">
+        <span class="sticker lime">LIVE DEMO</span> 点击下方按钮，直接进入销售工作台
+      </div>
+      <p>数据总览 · 访客追踪 · 客户留资 · 产品资料 · 展示页编辑 · 多语言切换，完整可玩。</p>
+      <p style="margin-top:22px"><a class="btn magnet" href="scanmeet/workbench.html" target="_blank" rel="noopener" data-cur="go" data-label="DEMO"><span>打开 AI 工作台 →</span></a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 AI PROJECT 2 ============ -->
+<section class="proj" id="w-ai2">
+  <div class="wrap">
+    <div class="proj-head rv">
+      <div class="proj-no">02</div>
+      <div>
+        <h3>AI 项目二 <span>AI PROJECT</span></h3>
+        <p>第二个 AI 项目同样在准备中，欢迎先看看下面的产品与品牌作品。</p>
+        <div class="proj-tags">
+          <span class="chip">AIGC</span><span class="chip">AI 辅助设计</span><span class="chip">COMING SOON</span>
+        </div>
+      </div>
+    </div>
+    <div class="coming rv">
+      <div class="big">
+        <span class="sticker outline">TO BE CONTINUED</span> 项目整理中，敬请期待
+      </div>
+      <p>这里将展示 AI 方向的第二个创作项目。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 PRODUCT DESIGN ============ -->
+<section class="proj" id="w-pd">
+  <div class="wrap">
+    <div class="proj-head rv">
+      <div class="proj-no">03</div>
+      <div>
+        <h3>产品设计 <span>PRODUCT DESIGN</span></h3>
+        <p>三个完整的产品设计项目：从用户研究、草图推敲到渲染落地的全流程记录。</p>
+      </div>
+    </div>
+
+    <!-- OOC -->
+    <article class="rv" style="margin-bottom:100px">
+      <div class="proj-head" style="margin-bottom:36px">
+        <div class="proj-no" style="-webkit-text-stroke-color:rgba(244,160,44,.6)">A</div>
+        <div>
+          <h3>OOC 户外料理箱 <span>OUTDOOR COOKING BOX</span></h3>
+          <p>电磁炉 + 烧烤炉创新一体化设计，面向户外烹饪爱好者。模块化集成熟饪、便携与收纳，智能触控面板精准设定温度，不锈钢烧烤架耐高温易清洁。</p>
+          <div class="proj-tags"><span class="chip">产品设计</span><span class="chip">模块化</span><span class="chip">户外场景</span><span class="chip">获奖 · 省级奖项</span></div>
+        </div>
+      </div>
+      <div class="cover" data-cur="zoom" data-label="ZOOM"><img src="assets/pages/ooc-cover.webp" width="3000" height="1688" alt="OOC 户外料理箱 主视觉" decoding="async"></div>
+      <div class="gallery" data-group="ooc">
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">02</span><img src="assets/pages/ooc-02.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>背景分析</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">03</span><img src="assets/pages/ooc-03.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>调研过程 · 产品定位</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">04</span><img src="assets/pages/ooc-04.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>用户旅程图</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">05</span><img src="assets/pages/ooc-05.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>产品草图</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">06</span><img src="assets/pages/ooc-06.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>方案演化</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">07</span><img src="assets/pages/ooc-07.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>渲染方案</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">08</span><img src="assets/pages/ooc-08.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>细节展示</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">09</span><img src="assets/pages/ooc-09.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>场景展示</figcaption></figure>
+      </div>
+    </article>
+
+    <!-- DRONE -->
+    <article class="rv" style="margin-bottom:100px">
+      <div class="proj-head" style="margin-bottom:36px">
+        <div class="proj-no" style="-webkit-text-stroke-color:rgba(191,227,77,.6)">B</div>
+        <div>
+          <h3>航巡 · 海岸巡检无人机 <span>MARINE DRONE</span></h3>
+          <p>专为海岸巡检与海域监测而生：空海一体、可潜水的四旋翼无人机。常态巡检、台风应急、水下查核一体化作业系统，含 APP 端交互与品牌 VI 全案。</p>
+          <div class="proj-tags"><span class="chip">空海一体</span><span class="chip">IPX6 防水</span><span class="chip">APP 交互</span><span class="chip">品牌 VI</span></div>
+        </div>
+      </div>
+      <div class="cover" data-cur="zoom" data-label="ZOOM"><img src="assets/pages/drone-cover.webp" width="3000" height="1688" alt="航巡海岸巡检无人机 主视觉" decoding="async"></div>
+      <div class="gallery" data-group="drone">
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">02</span><img src="assets/pages/drone-02.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>背景分析</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">03</span><img src="assets/pages/drone-03.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>草图方案</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">04</span><img src="assets/pages/drone-04.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>常态化巡检流程</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">05</span><img src="assets/pages/drone-05.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>极端天气应急流程</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">06</span><img src="assets/pages/drone-06.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>APP 交互界面</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">07</span><img src="assets/pages/drone-07.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>LOGO 与设计规范</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">08</span><img src="assets/pages/drone-08.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>爆炸图</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">09</span><img src="assets/pages/drone-09.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>产品渲染 · 空中</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">10</span><img src="assets/pages/drone-10.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>产品渲染 · 水下</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">11</span><img src="assets/pages/drone-11.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>细节图</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">12</span><img src="assets/pages/drone-12.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>产品展示</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">13</span><img src="assets/pages/drone-13.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>遥控场景</figcaption></figure>
+      </div>
+    </article>
+
+    <!-- RED ALERT -->
+    <article class="rv">
+      <div class="proj-head" style="margin-bottom:36px">
+        <div class="proj-no" style="-webkit-text-stroke-color:rgba(224,60,60,.6)">C</div>
+        <div>
+          <h3>Red Alert · 车况遇险警示灯 <span>HAZARD WARNING LIGHT</span></h3>
+          <p>夜间与低能见度环境下的主动预警设备：以高穿透激光灯替代传统三脚架，铝合金机身 + 氟橡胶皮套，电量渐弱伴随闪烁提醒，把安全留给每一个深夜抛锚的人。</p>
+          <div class="proj-tags"><span class="chip">车载安全</span><span class="chip">激光警示</span><span class="chip">CMF 设计</span><span class="chip">PI 形象</span></div>
+        </div>
+      </div>
+      <div class="cover" data-cur="zoom" data-label="ZOOM"><img src="assets/pages/redalert-cover.webp" width="3000" height="1688" alt="Red Alert 主视觉" decoding="async"></div>
+      <div class="gallery" data-group="redalert">
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">02</span><img src="assets/pages/redalert-02.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>数据调研</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">03</span><img src="assets/pages/redalert-03.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>发现问题</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">04</span><img src="assets/pages/redalert-04.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>概念提出</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">05</span><img src="assets/pages/redalert-05.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>可行性分析</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">06</span><img src="assets/pages/redalert-06.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>草图手绘</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">07</span><img src="assets/pages/redalert-07.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>产品展示</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">08</span><img src="assets/pages/redalert-08.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>PI 形象设计</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">09</span><img src="assets/pages/redalert-09.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>功能标注</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">10</span><img src="assets/pages/redalert-10.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>尺寸标注</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">11</span><img src="assets/pages/redalert-11.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>尺寸比例</figcaption></figure>
+        <figure data-cur="zoom" data-label="ZOOM"><span class="idx">12</span><img src="assets/pages/redalert-12.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>功能细节</figcaption></figure>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 04 BRAND ============ -->
+<section class="proj" id="w-brand">
+  <div class="wrap">
+    <div class="proj-head rv">
+      <div class="proj-no">04</div>
+      <div>
+        <h3>平面 & 品牌设计 <span>GRAPHIC & BRAND</span></h3>
+        <p>南头荔记 Nantou Lychee Diary —— 以「荔枝文化」为线索的城市文旅 IP：古城 × 荔枝，三只小瑞兽与一座有生活的深圳。从品牌 LOGO、IP 设定到海报、包装与地铁空间的全套视觉。</p>
+        <div class="proj-tags"><span class="chip">城市文旅 IP</span><span class="chip">品牌设计</span><span class="chip">IP 形象</span><span class="chip">包装 & 空间</span></div>
+      </div>
+    </div>
+    <div class="cover rv" data-cur="zoom" data-label="ZOOM"><img src="assets/pages/nantou-cover.webp" width="3000" height="1688" alt="南头荔记 主视觉" decoding="async"></div>
+    <div class="gallery rv" data-group="nantou">
+      <figure data-cur="zoom" data-label="ZOOM"><span class="idx">02</span><img src="assets/pages/nantou-02.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>故事背景</figcaption></figure>
+      <figure data-cur="zoom" data-label="ZOOM"><span class="idx">03</span><img src="assets/pages/nantou-03.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>LOGO 组合形式</figcaption></figure>
+      <figure data-cur="zoom" data-label="ZOOM"><span class="idx">04</span><img src="assets/pages/nantou-04.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>设定介绍 · Nantou Friend</figcaption></figure>
+      <figure data-cur="zoom" data-label="ZOOM"><span class="idx">05</span><img src="assets/pages/nantou-05.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>场景海报 · 一起出发</figcaption></figure>
+      <figure data-cur="zoom" data-label="ZOOM"><span class="idx">06</span><img src="assets/pages/nantou-06.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>IP 主形象海报</figcaption></figure>
+      <figure data-cur="zoom" data-label="ZOOM"><span class="idx">07</span><img src="assets/pages/nantou-07.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>你好南头</figcaption></figure>
+      <figure data-cur="zoom" data-label="ZOOM"><span class="idx">08</span><img src="assets/pages/nantou-08.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>古城跃动</figcaption></figure>
+      <figure data-cur="zoom" data-label="ZOOM"><span class="idx">09</span><img src="assets/pages/nantou-09.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>爱拼才会赢</figcaption></figure>
+      <figure data-cur="zoom" data-label="ZOOM"><span class="idx">10</span><img src="assets/pages/nantou-10.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>深圳有蟧吻</figcaption></figure>
+      <figure data-cur="zoom" data-label="ZOOM"><span class="idx">11</span><img src="assets/pages/nantou-11.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>螯游深圳</figcaption></figure>
+      <figure data-cur="zoom" data-label="ZOOM"><span class="idx">12</span><img src="assets/pages/nantou-12.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>农产品包装</figcaption></figure>
+      <figure data-cur="zoom" data-label="ZOOM"><span class="idx">13</span><img src="assets/pages/nantou-13.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>家具系列 · 荔枝椅</figcaption></figure>
+      <figure data-cur="zoom" data-label="ZOOM"><span class="idx">14</span><img src="assets/pages/nantou-14.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>家具系列 · 更多产品</figcaption></figure>
+      <figure data-cur="zoom" data-label="ZOOM"><span class="idx">15</span><img src="assets/pages/nantou-15.webp" width="2400" height="1350" loading="lazy" decoding="async" alt=""><figcaption>地铁形象空间</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer id="contact">
+  <div class="wrap" style="position:relative;z-index:2">
+    <div class="say rv">一起做点<span>有意思的设计</span>吧。</div>
+    <div class="rows rv">
+      <div><div class="lab">Mail</div><div class="val"><a href="mailto:2664189463@qq.com" data-copy="2664189463@qq.com" data-cur="go" data-label="COPY">2664189463@qq.com</a></div></div>
+      <div><div class="lab">WeChat</div><div class="val"><button class="copy-line" data-copy="G6662333M" data-copyname="微信号" data-cur="go" data-label="COPY">G6662333M</button><span class="copy-hint">点击复制</span></div></div>
+      <div><div class="lab">Tel</div><div class="val"><a href="tel:13631879860" data-copy="13631879860" data-cur="go" data-label="COPY">136 3187 9860</a></div></div>
+      <div class="foot-qr-wrap"><div class="foot-qr"><img src="assets/ip/qr-wechat.png" alt="梅美雁微信二维码"><span><b>WECHAT</b>扫码加我<br>交换名片</span></div></div>
+    </div>
+    <div class="foot-bottom">
+      <div class="wordmark">Portfolio</div>
+      <div>© 2026 梅美雁 Mei Meiyan · Made with ♥ · 广东广州</div>
+    </div>
+  </div>
+  <span class="sticker lime foot-stkr float magnet" data-depth="22"># 从研究走向真实产品</span>
+  <img class="foot-ip" data-depth="16" src="assets/ip/ip-cheer.png" alt="">
+</footer>
+
+<!-- ============ LIGHTBOX ============ -->
+<div class="lb" id="lb">
+  <button class="btn-x" id="lbClose">✕</button>
+  <button class="prev" id="lbPrev">←</button>
+  <button class="next" id="lbNext">→</button>
+  <div class="lb-stage"><img id="lbImg" src="" alt=""></div>
+  <div class="cap" id="lbCap"></div>
+  <div class="lb-strip" id="lbStrip"></div>
+</div>
+
+<script>
+(() => {
+  const fine = matchMedia('(pointer:fine)').matches;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hasCursor = fine && !reduce;
+  if (hasCursor) document.documentElement.classList.add('has-cursor');
+
+  /* ---------- reveal on scroll ---------- */
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }), {threshold:.1, rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+  /* ---------- scroll progress ---------- */
+  const prog = document.getElementById('prog');
+  const onScroll = () => {
+    const h = document.documentElement.scrollHeight - innerHeight;
+    prog.style.width = (h > 0 ? (scrollY / h) * 100 : 0) + '%';
+  };
+  addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  /* ---------- nav scroll spy ---------- */
+  const navLinks = [...document.querySelectorAll('nav a.nv')];
+  const spy = new IntersectionObserver(es => {
+    es.forEach(e => {
+      if (!e.isIntersecting) return;
+      const id = '#' + e.target.id;
+      navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === id));
+    });
+  }, {threshold:.25});
+  ['resume','works','contact'].forEach(id => { const el = document.getElementById(id); if (el) spy.observe(el); });
+
+  /* ================= CURSOR SYSTEM ================= */
+  const root = document.documentElement;
+  if (hasCursor) {
+  const cur = document.getElementById('cur');
+  const curLabel = document.getElementById('curLabel');
+  const spot = document.getElementById('spot');
+  const pv = document.getElementById('pv'), pvImg = document.getElementById('pvImg');
+
+  const M = {x: innerWidth/2, y: innerHeight/2};   // 真实指针位置
+  const V = {x: 0, y: 0};                          // 速度（用于旋转 / 字幕条）
+  let pvOn = false, pvRot = 0;
+  cur.style.opacity = 0;                            // 首次移动前不显示
+
+  /* 箭头尖端对齐指针：零缓动，1:1 跟手 */
+  const TIP_X = 4, TIP_Y = 3;
+  function moveCur() {
+    cur.style.transform = `translate3d(${M.x - TIP_X}px, ${M.y - TIP_Y}px, 0)`;
+  }
+  function moveSpot() {
+    spot.style.transform = `translate3d(${M.x}px, ${M.y}px, 0) translate(-50%, -50%)`;
+  }
+
+  addEventListener('mousemove', e => {
+    V.x = e.clientX - M.x; V.y = e.clientY - M.y;
+    M.x = e.clientX; M.y = e.clientY;
+    cur.style.opacity = 1;
+    moveCur(); moveSpot();
+  }, {passive:true});
+  addEventListener('mousedown', () => root.classList.add('is-down'));
+  addEventListener('mouseup', () => root.classList.remove('is-down'));
+  addEventListener('mouseleave', () => { cur.style.opacity = 0; spot.style.opacity = 0; });
+  addEventListener('mouseenter', () => { spot.style.opacity = 1; });
+
+  /* cursor states via data-cur */
+  const SURFACE = '[data-cur]';
+  document.addEventListener('mouseover', e => {
+    const t = e.target.closest(SURFACE);
+    if (!t) { delete root.dataset.cursor; curLabel.textContent = ''; return; }
+    root.dataset.cursor = t.dataset.cur || 'go';
+    curLabel.textContent = t.dataset.label || '';
+  });
+  document.addEventListener('mouseout', e => {
+    if (!e.relatedTarget || !e.relatedTarget.closest(SURFACE)) { delete root.dataset.cursor; curLabel.textContent = ''; }
+  });
+
+  /* work-row hover preview */
+  const pvStrip = document.getElementById('pvStrip');
+  document.querySelectorAll('.work-row').forEach(row => {
+    row.addEventListener('mouseenter', () => {
+      if (!row.dataset.pv) return;
+      const urls = row.dataset.pv.split(',');
+      const multi = urls.length > 1;
+      pv.classList.toggle('multi', multi);
+      if (multi) {
+        pvStrip.innerHTML = urls.map(u => `<img src="${u.trim()}" alt="">`).join('');
+      } else {
+        pvStrip.innerHTML = '';
+        pvImg.src = urls[0];
+      }
+      pvOn = true; pvRot = 0; pv.classList.add('on');
+    });
+    row.addEventListener('mouseleave', () => { pvOn = false; pv.classList.remove('on'); });
+  });
+
+  /* magnetic elements */
+  const magnets = [...document.querySelectorAll('.magnet')].map(el => ({el, bx:0, by:0}));
+  function updateMagnets(dt = 1) {
+    magnets.forEach(m => {
+      const r = m.el.getBoundingClientRect();
+      const cx = r.left + r.width/2, cy = r.top + r.height/2;
+      const dx = M.x - cx, dy = M.y - cy;
+      const dist = Math.hypot(dx, dy);
+      const range = Math.max(r.width, r.height) * .75 + 70;
+      let tx = 0, ty = 0;
+      if (dist < range) { const f = (1 - dist/range); tx = dx * .3 * f; ty = dy * .3 * f; }
+      const k = 1 - Math.pow(1 - .45, dt);
+      m.bx += (tx - m.bx) * k;
+      m.by += (ty - m.by) * k;
+      if (Math.abs(m.bx) > .05 || Math.abs(m.by) > .05) {
+        m.el.style.translate = `${m.bx.toFixed(2)}px ${m.by.toFixed(2)}px`;
+      }
+    });
+  }
+
+  /* gallery 3D tilt + moving highlight */
+  document.querySelectorAll('.gallery figure, .card, .cover').forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width;
+      const py = (e.clientY - r.top) / r.height;
+      el.style.setProperty('--mx', px*100 + '%');
+      el.style.setProperty('--my', py*100 + '%');
+      el.style.setProperty('--gx', px*100 + '%');
+      el.style.setProperty('--gy', py*100 + '%');
+      if (el.tagName === 'FIGURE') {
+        const rx = (py - .5) * -7, ry = (px - .5) * 7;
+        el.style.transform = `perspective(1100px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) translateY(-4px) scale(1.012)`;
+      }
+    });
+    el.addEventListener('mouseleave', () => {
+      if (el.tagName === 'FIGURE') el.style.transform = '';
+    });
+  });
+
+  /* hero / footer layered parallax */
+  const depths = [...document.querySelectorAll('[data-depth]')].map(el => ({el, d: +el.dataset.depth || 20}));
+
+  /* ---------- IP 表情互动：戳一下换表情 + 对话气泡 ---------- */
+  (() => {
+    const stage = document.getElementById('ipStage');
+    const char = document.getElementById('ipChar');
+    const bubble = document.getElementById('ipBubble');
+    if (!stage || !char || !bubble) return;
+    const bubTag = bubble.querySelector('b');
+    const bubTxt = document.getElementById('ipBubbleTxt');
+    const hint = document.getElementById('ipHint');
+
+    const BASE = 'assets/ip/ip-hero.png';
+    const FACES = [
+      { src: 'assets/ip/ip-wow.png',   tag: 'OH WOW!',  txt: '你戳到我啦！',          tone: 'pink' },
+      { src: 'assets/ip/ip-lol.png',   tag: 'HAHAHA!',  txt: '这也太好笑了吧哈哈哈',  tone: 'yellow' },
+      { src: 'assets/ip/ip-think.png', tag: 'HMM...',   txt: '让我想想这个需求…',     tone: 'lime' },
+      { src: 'assets/ip/ip-shy.png',   tag: 'OH NO...', txt: '别、别一直盯着看啦',    tone: 'purple' },
+      { src: 'assets/ip/ip-wink.png',  tag: 'HEHE~',    txt: '秘密武器，不告诉你',    tone: 'blue' },
+      { src: 'assets/ip/ip-cheer.png', tag: 'GO GO!',   txt: '喜欢就继续往下翻 ↓',    tone: 'lime' },
+    ];
+    const COMBO = [
+      { at: 4,  txt: '哎，手别停啊',                tone: 'lime' },
+      { at: 7,  txt: '戳这么多次，是有什么想法？',  tone: 'blue' },
+      { at: 11, txt: '再戳我要收设计费了（认真）',  tone: 'yellow' },
+      { at: 16, txt: '行吧你赢了 —— 简历在最上面 ↑', tone: 'purple' },
+    ];
+
+    let lastTap = 0, combo = 0, cur = BASE, clicked = false;
+    let backTimer = 0, idleTimer = 0;
+
+    ['wow', 'lol', 'think', 'shy', 'wink', 'cheer', 'love'].forEach(n => { const i = new Image(); i.src = `assets/ip/ip-${n}.png`; });
+
+    const say = (tag, txt, tone) => {
+      bubTag.textContent = tag; bubTxt.textContent = txt; bubble.dataset.tone = tone;
+      bubble.classList.add('on');
+    };
+    const hideBubble = () => bubble.classList.remove('on');
+
+    function setFace(src) {
+      /* 撒钱花痴脸期间（window.__ipLock）不被 idle/彩蛋定时器打断 */
+      if (window.__ipLock) return;
+      if (char.getAttribute('src') === src) return;
+      cur = src; char.src = src;
+      char.classList.remove('swap'); void char.offsetWidth; char.classList.add('swap');
+    }
+    const baseFace = () => setFace(BASE);
+
+    function scheduleIdle() {
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(function peek() {
+        if (bubble.classList.contains('on')) { scheduleIdle(); return; }
+        setFace(Math.random() < .5 ? 'assets/ip/ip-wink.png' : 'assets/ip/ip-think.png');
+        setTimeout(() => { baseFace(); scheduleIdle(); }, 1700);
+      }, 7000 + Math.random() * 5000);
+    }
+
+    function onTap(e) {
+      if (e) e.preventDefault();
+      if (!clicked) { clicked = true; hint && hint.classList.add('gone'); }
+      const now = performance.now();
+      combo = now - lastTap < 1400 ? combo + 1 : 1;
+      lastTap = now;
+
+      const hit = COMBO.find(c => c.at === combo);
+      const f = FACES[Math.floor(Math.random() * FACES.length)];
+      setFace(f.src);
+      hit ? say('OUCH!', hit.txt, hit.tone) : say(f.tag, f.txt, f.tone);
+
+      stage.classList.remove('pop'); void stage.offsetWidth; stage.classList.add('pop');
+      clearTimeout(backTimer);
+      backTimer = setTimeout(() => { baseFace(); hideBubble(); }, 2600);
+      clearTimeout(idleTimer); scheduleIdle();
+    }
+
+    stage.addEventListener('pointerdown', onTap);
+    char.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') onTap(e); });
+    scheduleIdle();
+
+    /* 进场主动打招呼：让互动一眼可见 */
+    setTimeout(() => {
+      if (clicked) return;
+      setFace('assets/ip/ip-cheer.png');
+      say('HI THERE!', '嗨，我是美雁～点我一下试试！', 'lime');
+      stage.classList.remove('pop'); void stage.offsetWidth; stage.classList.add('pop');
+      setTimeout(() => { if (!clicked) { baseFace(); hideBubble(); } }, 3600);
+    }, 1300);
+  })();
+
+  /* ---------- single rAF loop ---------- */
+  let lastScrollY = scrollY;
+  let lastT = performance.now();
+  function tick(now) {
+    const dt = Math.min(3, Math.max(.4, (now - lastT) / 16.667)); lastT = now;
+
+    if (pvOn) {
+      // 预览卡即时贴住指针，只让旋转带一点惯性；拼贴模式减小摆动避免散乱
+      const rotScale = pv.classList.contains('multi') ? .3 : 1;
+      pvRot += (Math.max(-12, Math.min(12, V.x * .3)) * rotScale - pvRot) * (1 - Math.pow(1 - .3, dt));
+      pv.style.transform = `translate3d(${M.x + 168}px, ${M.y + 24}px, 0) translate(-50%, -50%) rotate(${pvRot.toFixed(2)}deg)`;
+    }
+
+    const nx = (M.x / innerWidth - .5), ny = (M.y / innerHeight - .5);
+    depths.forEach(({el, d}) => {
+      el.style.setProperty('--px', (nx * d).toFixed(1) + 'px');
+      el.style.setProperty('--py', (ny * d).toFixed(1) + 'px');
+    });
+
+    updateMagnets(dt);
+
+    V.x *= .84; V.y *= .84;
+
+    lastScrollY = scrollY;
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+  } // —— end cursor system ——
+
+  /* ================= LIGHTBOX ================= */
+  const lb = document.getElementById('lb'), lbImg = document.getElementById('lbImg');
+  const lbCap = document.getElementById('lbCap'), lbStrip = document.getElementById('lbStrip');
+  let curList = [], idx = 0;
+
+  document.querySelectorAll('.gallery').forEach(g => {
+    const figs = [...g.querySelectorAll('figure')];
+    figs.forEach((f, i) => f.addEventListener('click', () => {
+      curList = figs.map(x => ({
+        src: x.querySelector('img').src,
+        cap: x.querySelector('figcaption') ? x.querySelector('figcaption').textContent : ''
+      }));
+      idx = i; show(); lb.classList.add('on'); document.body.style.overflow = 'hidden';
+      document.documentElement.removeAttribute('data-cursor');
+    }));
+  });
+  // covers open as single item
+  document.querySelectorAll('.cover').forEach(c => c.addEventListener('click', () => {
+    curList = [{src: c.querySelector('img').src, cap: c.querySelector('img').alt || ''}];
+    idx = 0; show(); lb.classList.add('on'); document.body.style.overflow = 'hidden';
+    document.documentElement.removeAttribute('data-cursor');
+  }));
+
+  function show() {
+    lbImg.src = curList[idx].src;
+    lbCap.textContent = curList[idx].cap + '  ·  ' + (idx + 1) + ' / ' + curList.length;
+    lbStrip.innerHTML = '';
+    if (curList.length > 1) {
+      curList.forEach((it, i) => {
+        const t = document.createElement('img');
+        t.src = it.src; t.alt = ''; t.className = i === idx ? 'cur' : '';
+        t.addEventListener('click', ev => { ev.stopPropagation(); idx = i; show(); });
+        lbStrip.appendChild(t);
+      });
+      const active = lbStrip.querySelector('.cur');
+      if (active) active.scrollIntoView({block:'nearest', inline:'center', behavior:'smooth'});
+    }
+  }
+  function closeLb(){ lb.classList.remove('on'); document.body.style.overflow = ''; }
+  document.getElementById('lbClose').onclick = closeLb;
+  document.getElementById('lbPrev').onclick = e => { e.stopPropagation(); idx = (idx - 1 + curList.length) % curList.length; show(); };
+  document.getElementById('lbNext').onclick = e => { e.stopPropagation(); idx = (idx + 1) % curList.length; show(); };
+  lb.addEventListener('click', e => { if (e.target === lb || e.target.classList.contains('lb-stage')) closeLb(); });
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('on')) return;
+    if (e.key === 'Escape') closeLb();
+    if (e.key === 'ArrowLeft') { idx = (idx - 1 + curList.length) % curList.length; show(); }
+    if (e.key === 'ArrowRight') { idx = (idx + 1) % curList.length; show(); }
+  });
+})();
+</script>
+<script>
+/* 联系方式一键复制：点击 → 写入剪贴板 → 青柠 toast 反馈 */
+(function(){
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.setAttribute('role', 'status');
+  document.body.appendChild(toast);
+  let timer;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('on');
+    clearTimeout(timer);
+    timer = setTimeout(() => toast.classList.remove('on'), 2200);
+  }
+  async function copyText(s){
+    try { await navigator.clipboard.writeText(s); return true; }
+    catch(e){
+      const ta = document.createElement('textarea');
+      ta.value = s;
+      ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch(_){}
+      ta.remove();
+      return ok;
+    }
+  }
+  document.querySelectorAll('[data-copy]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      copyText(el.dataset.copy).then(ok => {
+        el.classList.add('ok');
+        showToast((el.dataset.copyname || '内容') + '已复制 ✓ ' + el.dataset.copy);
+        setTimeout(() => el.classList.remove('ok'), 1600);
+      });
+    });
+  });
+})();
+
+/* 招财云：点击撒钱，美元 → 金币 → 人民币循环，撒钱时 IP 变花痴脸，累计金额彩蛋 */
+(function(){
+  const wrap = document.getElementById('cloudWrap');
+  const art = document.getElementById('heroArt');
+  const tag = document.getElementById('cloudTag');
+  const jar = document.getElementById('cloudJar');
+  if (!wrap || !art) return;
+
+  const BILL = '<svg viewBox="0 0 66 42" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="1.5" width="63" height="39" rx="5" fill="#7fa663" stroke="#fff" stroke-width="3"/><rect x="8" y="7" width="50" height="28" rx="3" fill="none" stroke="#5c8147" stroke-width="1.6"/><circle cx="33" cy="21" r="11" fill="#a9c98d"/><text x="33" y="27" text-anchor="middle" font-family="Georgia,serif" font-size="16" font-weight="bold" fill="#3c5a2c">$</text><path d="M12 12h8M12 30h8M46 12h8M46 30h8" stroke="#5c8147" stroke-width="1.6" stroke-linecap="round"/></svg>';
+  const COIN = '<svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="22" r="19.5" fill="#f5c542" stroke="#fff" stroke-width="3"/><circle cx="22" cy="22" r="14" fill="none" stroke="#c9992a" stroke-width="2"/><circle cx="22" cy="22" r="14" fill="none" stroke="#ffe89b" stroke-width="1.2" stroke-dasharray="5 7"/><text x="22" y="29" text-anchor="middle" font-family="Georgia,serif" font-size="17" font-weight="bold" fill="#a87b1e">$</text><path d="M12 10a14 14 0 0 1 7-4" stroke="#fff2c4" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg>';
+  const RMB  = '<svg viewBox="0 0 66 42" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="1.5" width="63" height="39" rx="5" fill="#e0645c" stroke="#fff" stroke-width="3"/><rect x="8" y="7" width="50" height="28" rx="3" fill="none" stroke="#b23f38" stroke-width="1.6"/><circle cx="33" cy="21" r="11" fill="#f0948d"/><text x="33" y="27" text-anchor="middle" font-family="Georgia,serif" font-size="15" font-weight="bold" fill="#8c2b25">¥</text><path d="M12 12h8M12 30h8M46 12h8M46 30h8" stroke="#b23f38" stroke-width="1.6" stroke-linecap="round"/></svg>';
+  const MODES = {
+    bill: { svg: BILL, tag: '美元雨 · USD RAIN', value: 100, sym: '$' },
+    coin: { svg: COIN, tag: '金币雨 · GOLD RAIN', value: 50,  sym: '$' },
+    rmb:  { svg: RMB,  tag: '人民币雨 · RMB RAIN', value: 100, sym: '¥' },
+  };
+  const ORDER = ['bill', 'coin', 'rmb'];
+  let mode = 'bill';
+  const totals = { bill: 0, coin: 0, rmb: 0 };
+  let live = 0;
+
+  /* 撒钱期间 IP 换狂喜脸（星星眼高举双手接钱），雨停后回到默认表情 */
+  const ipChar = document.getElementById('ipChar');
+  const IP_BASE = 'assets/ip/ip-hero.png', IP_LOVE = 'assets/ip/ip-love.png';
+  let loveTimer = null;
+  function loveFace(){
+    if (!ipChar) return;
+    window.__ipLock = true;
+    if (ipChar.src !== IP_LOVE && !ipChar.src.endsWith('ip-love.png')){
+      ipChar.src = IP_LOVE;
+      ipChar.classList.remove('swap'); void ipChar.offsetWidth; ipChar.classList.add('swap');
+    }
+    clearTimeout(loveTimer);
+    loveTimer = setTimeout(() => {
+      window.__ipLock = false;
+      if (!ipChar.src.endsWith('ip-love.png')) return;
+      ipChar.src = IP_BASE;
+      ipChar.classList.remove('swap'); void ipChar.offsetWidth; ipChar.classList.add('swap');
+    }, 3200);
+  }
+
+  function spawn(n){
+    const wr = wrap.getBoundingClientRect(), ar = art.getBoundingClientRect();
+    const baseX = wr.left - ar.left + wr.width * .5;
+    const baseY = wr.top - ar.top + wr.height * .78;
+    const W = ar.width;
+    n = Math.min(n, Math.max(0, 46 - live));
+    for (let i = 0; i < n; i++){
+      setTimeout(() => {
+        const m = document.createElement('div');
+        m.className = 'money';
+        const size = 22 + Math.random() * 20;
+        m.style.cssText = `left:${(baseX + (Math.random() - .5) * wr.width * 2.6).toFixed(0)}px;top:${(baseY + Math.random() * 26).toFixed(0)}px;width:${size.toFixed(0)}px;--sway:${((Math.random() - .5) * 150).toFixed(0)}px;--fall:${(ar.height - baseY + 90 + Math.random() * 120).toFixed(0)}px;--rot:${((Math.random() - .5) * 640).toFixed(0)}deg;--dur:${(1.5 + Math.random() * 1.1).toFixed(2)}s`;
+        m.innerHTML = MODES[mode].svg;
+        art.appendChild(m);
+        live++;
+        m.addEventListener('animationend', () => { live--; m.remove(); });
+      }, i * 65);
+    }
+  }
+
+  function rain(){
+    wrap.classList.remove('burst'); void wrap.offsetWidth; wrap.classList.add('burst');
+    spawn(12);
+    loveFace();
+    totals[mode] += MODES[mode].value * (3 + Math.floor(Math.random() * 4));
+    jar.textContent = MODES[mode].sym + totals[mode].toLocaleString('en-US');
+    jar.classList.remove('pop'); void jar.offsetWidth; jar.classList.add('pop');
+    setTimeout(() => jar.classList.remove('pop'), 200);
+    // 下一次点击切换币种：美元 → 金币 → 人民币
+    mode = ORDER[(ORDER.indexOf(mode) + 1) % ORDER.length];
+    tag.textContent = MODES[mode].tag;
+    wrap.dataset.mode = mode;
+  }
+
+  wrap.addEventListener('pointerdown', rain);
+  wrap.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rain(); } });
+})();
+</script>
+</body>
+</html>
